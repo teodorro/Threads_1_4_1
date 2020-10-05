@@ -2,7 +2,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
 
 public class TelephoneStation {
     public static final int CONSULTANTS_NUMBER = 3;
@@ -27,20 +26,18 @@ public class TelephoneStation {
     }
 
     private void startAnswers(int consultantsNumber) {
-        IntStream.range(0, consultantsNumber).forEach(x ->
-                es.submit(() -> {
-                    while (true) {
-                        if (calls.size() > 0) {
-                            String call = calls.poll();
-                            sleep(CONSULTATION_TIME);
-                            System.out.println(call + " finished");
-                        } else{
-                            sleep(CONSULTATION_TIME);
-                            if (calls.size() == 0)
-                                break;
-                        }
+        for (int i = 0; i < consultantsNumber; i++){
+            es.submit(() -> {
+                while (true) {
+                    String call = calls.poll();
+                    if (call != null)
+                    {
+                        sleep(CONSULTATION_TIME);
+                        System.out.println(call + " finished");
                     }
-                }));
+                }
+            });
+        }
     }
 
     private void startCalls(int callsNum) {
