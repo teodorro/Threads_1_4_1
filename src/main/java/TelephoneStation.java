@@ -5,8 +5,8 @@ import java.util.concurrent.TimeUnit;
 
 public class TelephoneStation {
     public static final int CONSULTANTS_NUMBER = 3;
-    public static final int CALLS_NUM = 10;
-    public static final int CONSULTATION_TIME = 3000;
+    public static final int CALLS_NUM = 15;
+    public static final int CONSULTATION_TIME = 4000;
     public static final int CALLS_GAP = 1000;
     public static final int TIMEOUT = 4;
 
@@ -29,12 +29,9 @@ public class TelephoneStation {
         for (int i = 0; i < consultantsNumber; i++){
             es.submit(() -> {
                 while (true) {
-                    String call = calls.poll();
-                    if (call != null)
-                    {
-                        sleep(CONSULTATION_TIME);
-                        System.out.println(call + " finished");
-                    }
+                    String call = calls.take();
+                    sleep(CONSULTATION_TIME);
+                    System.out.println(call + " finished");
                 }
             });
         }
@@ -43,7 +40,7 @@ public class TelephoneStation {
     private void startCalls(int callsNum) {
         es.submit(() -> {
             for (int i = 0; i < callsNum; i++) {
-                calls.add("call " + i);
+                calls.put("call " + i);
                 System.out.println("call " + i + " added");
                 sleep(CALLS_GAP);
             }
